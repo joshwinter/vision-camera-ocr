@@ -1,5 +1,5 @@
 {
-  "name": "@francesco-clementi-92moreiraa/vision-camera-ocr",
+  "name": "@francesco-clementi-92/vision-camera-ocr",
   "version": "3.0.1",
   "private": false,
   "description": "VisionCamera Frame Processor Plugin to provide OCR support",
