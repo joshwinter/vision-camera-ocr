@@ -11,7 +11,7 @@ import {
 
 // import {useSharedValue,} from 'react-native-worklets-core';
 
-import {scanOCR} from '@francesco-clementi-92/vision-camera-ocr';
+import {scanOCR} from 'vision-camera-ocr';
 
 export default function App() {
   const [dimensions, setDimensions] = useState({width: 1, height: 1});
