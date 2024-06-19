@@ -155,8 +155,11 @@
                   result["text"] = text.text
                   result["blocks"] = getBlockArray(text.textBlocks)
               } catch (e: Exception) {
-                  return null
-              }
+                mediaImage.close() // Ensure the image is closed in case of exception
+                return null
+            } finally {
+                mediaImage.close() // Ensure the image is always closed after processing
+            }
           }
 
           return hashMapOf("result" to result)
