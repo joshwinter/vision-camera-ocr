@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
-    "rootDir": ".",
     "paths": {
-      "@ismaelmoreiraa/vision-camera-ocr": ["./src/index"]
+      "vision-camera-ocr": ["./src/index"]
     },
     "allowJs": false,
     "allowUnreachableCode": false,

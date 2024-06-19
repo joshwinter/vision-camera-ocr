@@ -1,14 +1,14 @@
 
-# vision-camera-ocr
+# vision-camera-ocr-plugin
 
-A [VisionCamera v4](https://github.com/mrousavy/react-native-vision-camera) Frame Processor Plugin to preform text detection on images using [**MLKit Vision** Text Recognition](https://developers.google.com/ml-kit/vision/text-recognition).
+A [VisionCamera](https://github.com/mrousavy/react-native-vision-camera) Frame Processor Plugin to preform text detection on images using [**MLKit Vision** Text Recognition](https://developers.google.com/ml-kit/vision/text-recognition). This module can be used only with React Native Vision Camera >= v4.x.x
 
 <img style='width:200px;' src="docs/demo.gif">
 
 ## Installation
 
 ```sh
-yarn add vision-camera-ocr
+yarn add vision-camera-ocr-plugin
 cd ios && pod install
 ```
 
@@ -25,13 +25,56 @@ module.exports = {
 ## Usage
 
 ```js
-import {scanOCR} from 'vision-camera-ocr';
+import {OCRFrame, scanOCR} from 'vision-camera-ocr-plugin';
+import {
+  useFrameProcessor,
+  Camera,
+  useCameraDevice,
+} from 'react-native-vision-camera';
+import {Worklets} from 'react-native-worklets-core';
 
-// ...
-const frameProcessor = useFrameProcessor((frame) => {
-  'worklet';
-  const scannedOcr = scanOCR(frame);
-}, []);
+export default ({onTextClicked}: VisionCameraPlateProps) => {
+  const [hasPermission, setHasPermission] = React.useState(false);
+  const [ocr, setOcr] = React.useState<OCRFrame>();
+  const isFocused = useIsFocused();
+  const device = useCameraDevice('back');
+
+  const onCodeDetected = Worklets.createRunInJsFn((data: any) => {
+    setOcr(data);
+  });
+
+  const frameProcessor = useFrameProcessor(frame => {
+    'worklet';
+    const data = scanOCR(frame);
+    onCodeDetected(data);
+  }, []);
+
+  React.useEffect(() => {
+    (async () => {
+      const status = await Camera.requestCameraPermission();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+
+  return (
+    <>
+      {device !== undefined && hasPermission ? (
+        <Camera
+          frameProcessor={frameProcessor}
+          device={device}
+          isActive={isFocused}
+          pixelFormat="yuv"
+        />
+      ) : (
+        <View>
+          <Text>No available cameras</Text>
+        </View>
+      )}
+    </>
+  );
+};
+
 ```
 
 ## Data
