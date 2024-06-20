@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "VisionCameraOcrExample.app"
-               BlueprintName = "VisionCameraOcrExample"
-               ReferencedContainer = "container:VisionCameraOcrExample.xcodeproj">
+               BuildableName = "visioncameraocrexample.app"
+               BlueprintName = "visioncameraocrexample"
+               ReferencedContainer = "container:visioncameraocrexample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "VisionCameraOcrExampleTests.xctest"
-               BlueprintName = "VisionCameraOcrExampleTests"
-               ReferencedContainer = "container:VisionCameraOcrExample.xcodeproj">
+               BuildableName = "visioncameraocrexampleTests.xctest"
+               BlueprintName = "visioncameraocrexampleTests"
+               ReferencedContainer = "container:visioncameraocrexample.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "VisionCameraOcrExample.app"
-            BlueprintName = "VisionCameraOcrExample"
-            ReferencedContainer = "container:VisionCameraOcrExample.xcodeproj">
+            BuildableName = "visioncameraocrexample.app"
+            BlueprintName = "visioncameraocrexample"
+            ReferencedContainer = "container:visioncameraocrexample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "VisionCameraOcrExample.app"
-            BlueprintName = "VisionCameraOcrExample"
-            ReferencedContainer = "container:VisionCameraOcrExample.xcodeproj">
+            BuildableName = "visioncameraocrexample.app"
+            BlueprintName = "visioncameraocrexample"
+            ReferencedContainer = "container:visioncameraocrexample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
