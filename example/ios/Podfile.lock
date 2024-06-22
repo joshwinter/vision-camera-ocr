@@ -1243,7 +1243,7 @@ PODS:
   - VisionCamera/React (4.3.2):
     - React-Core
     - VisionCamera/FrameProcessors
-  - VisionCameraOcr (3.0.7):
+  - VisionCameraOcr (3.0.9):
     - GoogleMLKit/TextRecognition (= 4.0.0)
     - React-Core
     - VisionCamera
@@ -1514,9 +1514,9 @@ SPEC CHECKSUMS:
   ReactCommon: ecad995f26e0d1e24061f60f4e5d74782f003f12
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   VisionCamera: 9f7b70431c8662ff933e1ed66d074bdba3a63f7d
-  VisionCameraOcr: 50f806109bc29e0b4fc9bc90d71c1e6b44f9366e
+  VisionCameraOcr: 1ef117fd79f05dc1ab9ab879c6debe73f33700b1
   Yoga: 2f71ecf38d934aecb366e686278102a51679c308
 
-PODFILE CHECKSUM: ba7e09688e0a89b1f06cfcbb4c46e0c18ff66ac4
+PODFILE CHECKSUM: 75b7f2f38a2d113c40af1771323e4c6a10e43317
 
 COCOAPODS: 1.15.2
