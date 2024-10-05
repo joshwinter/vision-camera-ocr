@@ -47,6 +47,7 @@
               val lineMap = hashMapOf<String, Any?>()
 
               lineMap["text"] = line.text
+              lineMap["confidence"] = line.confidence.toDouble()
               lineMap["recognizedLanguages"] = getRecognizedLanguages(line.recognizedLanguage)
               lineMap["cornerPoints"] = line.cornerPoints?.let { getCornerPoints(it) }
               lineMap["frame"] = line.boundingBox?.let { getFrame(it)  }
