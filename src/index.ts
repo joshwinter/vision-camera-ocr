@@ -41,6 +41,7 @@ type TextLine = {
   boundingBox?: BoundingBox;
   recognizedLanguages: string[];
   cornerPoints?: Point[];
+  confidence: number;
 };
 
 type TextBlock = {
