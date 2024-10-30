@@ -17,7 +17,7 @@ class VisionCameraOcrPackage : ReactPackage {
                 OCRFrameProcessorPlugin(proxy, options)
             }
         }
-        return emptyList()
+        return modules
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
