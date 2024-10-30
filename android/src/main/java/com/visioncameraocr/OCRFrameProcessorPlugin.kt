@@ -176,19 +176,19 @@ class OCRFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<String, Any
                 null,
                 false
             )
-            val resized = resize(bm, 300, 150)
-            val image = InputImage.fromBitmap(resized, frame.imageProxy.imageInfo.rotationDegrees)
+            val image = InputImage.fromBitmap(bm, frame.imageProxy.imageInfo.rotationDegrees)
             val task: Task<Text> = recognizer.process(image)
             try {
                 val text: Text = Tasks.await(task)
-                OCRResult.addResult(text.text.replace(Regex("[^a-zA-Z0-9]+"), ""))
+                if (text.text.isNotEmpty()) {
+                    OCRResult.addResult(text.text.replace(Regex("[^a-zA-Z0-9]+"), ""))
+                }
                 result["text"] = OCRResult.getMostFrequentOrLatest()
             } catch (e: Exception) {
                 e.printStackTrace()
                 return null
             } finally {
                 bm.recycle()
-                resized.recycle()
             }
         } else {
             @SuppressLint("UnsafeOptInUsageError")
