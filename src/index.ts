@@ -58,6 +58,13 @@ type Text = {
   blocks: TextBlock[];
 };
 
+export interface CropRegion{
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 export type OCRFrame = {
   result: Text;
 };
@@ -67,12 +74,17 @@ export type OCRFrame = {
  */
 const plugin = VisionCameraProxy.initFrameProcessorPlugin('scanOCR');
 
-export function scanOCR(frame: Frame): OCRFrame {
+export function scanOCR(frame: Frame, params?: any): OCRFrame {
   'worklet';
   if (plugin == null) {
     throw new Error(
       'Failed to load Frame Processor Plugin "scanOCR"! Please check your dependencies and make sure that the plugin is linked correctly.'
     );
   }
-  return plugin.call(frame) as any;
+  if (params) {
+    return plugin.call(frame, params) as any;
+  } else {
+    return plugin.call(frame) as any;
+  }
 }
+
