@@ -156,6 +156,22 @@ class OCRFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<String, Any
         }
     }
 
+    private fun preprocessImage(bitmap: Bitmap): Bitmap {
+        // Convert to grayscale
+        val grayBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(grayBitmap)
+        val paint = Paint()
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setSaturation(0f) // Set saturation to 0 to get grayscale
+        val colorFilter = ColorMatrixColorFilter(colorMatrix)
+        paint.colorFilter = colorFilter
+        canvas.drawBitmap(bitmap, 0f, 0f, paint)
+
+        val resizedBitmap = Bitmap.createScaledBitmap(grayBitmap, 520, 110, true) // Resize to desired dimensions
+
+        return resizedBitmap
+    }
+
     override fun callback(frame: Frame, params: Map<String, Any>?): Any? {
         val result = hashMapOf<String, Any>()
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -176,7 +192,8 @@ class OCRFrameProcessorPlugin(proxy: VisionCameraProxy, options: Map<String, Any
                 null,
                 false
             )
-            val image = InputImage.fromBitmap(bm, frame.imageProxy.imageInfo.rotationDegrees)
+            val grayImage = preprocessImage(bm)
+            val image = InputImage.fromBitmap(grayImage, frame.imageProxy.imageInfo.rotationDegrees)
             val task: Task<Text> = recognizer.process(image)
             try {
                 val text: Text = Tasks.await(task)
