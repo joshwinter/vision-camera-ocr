@@ -1,3 +1,4 @@
+import Foundation
 import Vision
 import AVFoundation
 import MLKitVision
@@ -8,153 +9,75 @@ import UIKit
 @objc(OCRFrameProcessorPlugin)
 public class OCRFrameProcessorPlugin: FrameProcessorPlugin {
     
-    private static let textRecognizer = TextRecognizer.textRecognizer(options: TextRecognizerOptions.init())
+    private var textRecognizer = TextRecognizer()
+    private static let latinOptions = TextRecognizerOptions()
+    private var data: [String: Any] = [:]
     
-    private static func getBlockArray(_ blocks: [TextBlock]) -> [[String: Any]] {
-        
-        var blockArray: [[String: Any]] = []
-        
-        for block in blocks {
-            blockArray.append([
-                "text": block.text,
-                "recognizedLanguages": getRecognizedLanguages(block.recognizedLanguages),
-                "cornerPoints": getCornerPoints(block.cornerPoints),
-                "frame": getFrame(block.frame),
-                "boundingBox": getBoundingBox(block.frame) as Any,
-                "lines": getLineArray(block.lines),
-            ])
-        }
-        
-        return blockArray
+    public override init(proxy: VisionCameraProxyHolder, options: [AnyHashable: Any]! = [:]) {
+        super.init(proxy: proxy, options: options)
+        self.textRecognizer = TextRecognizer.textRecognizer(options: OCRFrameProcessorPlugin.latinOptions)
     }
     
-    private static func getLineArray(_ lines: [TextLine]) -> [[String: Any]] {
-        
-        var lineArray: [[String: Any]] = []
-        
-        for line in lines {
-            lineArray.append([
-                "text": line.text,
-                "recognizedLanguages": getRecognizedLanguages(line.recognizedLanguages),
-                "cornerPoints": getCornerPoints(line.cornerPoints),
-                "frame": getFrame(line.frame),
-                "boundingBox": getBoundingBox(line.frame) as Any,
-                "elements": getElementArray(line.elements),
-            ])
-        }
-        
-        return lineArray
-    }
-    
-    private static func getElementArray(_ elements: [TextElement]) -> [[String: Any]] {
-        
-        var elementArray: [[String: Any]] = []
-        
-        for element in elements {
-            elementArray.append([
-                "text": element.text,
-                "cornerPoints": getCornerPoints(element.cornerPoints),
-                "frame": getFrame(element.frame),
-                "boundingBox": getBoundingBox(element.frame) as Any,
-                "symbols": []
-            ])
-        }
-        
-        return elementArray
-    }
-    
-    private static func getRecognizedLanguages(_ languages: [TextRecognizedLanguage]) -> [String] {
-        
-        var languageArray: [String] = []
-        
-        for language in languages {
-            guard let code = language.languageCode else {
-                print("No language code exists")
-                break;
+    static func processBlocks(blocks:[TextBlock]) -> Array<Any> {
+            var blocksArray : [Any] = []
+            for block in blocks {
+                var blockData : [String:Any] = [:]
+                blockData["blockText"] = block.text
+                blockData["lines"] = processLines(lines: block.lines)
+                blocksArray.append(blockData)
             }
-            languageArray.append(code)
+            return blocksArray
         }
-        
-        return languageArray
-    }
-    
-    private static func getCornerPoints(_ cornerPoints: [NSValue]) -> [[String: CGFloat]] {
-        
-        var cornerPointArray: [[String: CGFloat]] = []
-        
-        for cornerPoint in cornerPoints {
-            guard let point = cornerPoint as? CGPoint else {
-                print("Failed to convert corner point to CGPoint")
-                break;
+
+        private static func processLines(lines:[TextLine]) -> Array<Any> {
+            var linesArray : [Any] = []
+            for line in lines {
+                var lineData : [String:Any] = [:]
+                lineData["text"] = line.text
+                linesArray.append(lineData)
             }
-            cornerPointArray.append([ "x": point.x, "y": point.y])
+            return linesArray
         }
-        
-        return cornerPointArray
-    }
-    
-    private static func getFrame(_ frameRect: CGRect) -> [String: CGFloat] {
-        
-        let offsetX = (frameRect.midX - ceil(frameRect.width)) / 2.0
-        let offsetY = (frameRect.midY - ceil(frameRect.height)) / 2.0
 
-        let x = frameRect.maxX + offsetX
-        let y = frameRect.minY + offsetY
-
-        return [
-          "x": frameRect.midX + (frameRect.midX - x),
-          "y": frameRect.midY + (y - frameRect.midY),
-          "width": frameRect.width,
-          "height": frameRect.height,
-          "boundingCenterX": frameRect.midX,
-          "boundingCenterY": frameRect.midY
-        ]
-    }
     
-    private static func getBoundingBox(_ rect: CGRect?) -> [String: CGFloat]? {
-         return rect.map {[
-             "left": $0.minX,
-             "top": $0.maxY,
-             "right": $0.maxX,
-             "bottom": $0.minY
-         ]}
+    private func getOrientation(orientation: UIImage.Orientation) -> UIImage.Orientation {
+        switch orientation {
+            case .up:
+              return .up
+            case .left:
+              return .right
+            case .down:
+              return .down
+            case .right:
+              return .left
+            default:
+              return .up
+        }
     }
     
     public override func callback(_ frame: Frame, withArguments arguments: [AnyHashable: Any]?) -> Any? {
         
-        guard let imageBuffer = CMSampleBufferGetImageBuffer(frame.buffer) else {
-          print("Failed to get image buffer from sample buffer.")
-          return nil
-        }
-
-        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
-        
-        guard let cgImage = CIContext().createCGImage(ciImage, from: ciImage.extent) else {
-            print("Failed to create bitmap from image.")
-            return nil
-        }
-        
-        let image = UIImage(cgImage: cgImage)
-       
-        let visionImage = VisionImage(image: image)
-        
-        // TODO: Get camera orientation state
-        visionImage.orientation = .up
-        
-        var result: Text
+        let buffer = frame.buffer
+        let image = VisionImage(buffer: buffer)
+        image.orientation = getOrientation(orientation: frame.orientation)
         
         do {
-          result = try OCRFrameProcessorPlugin.textRecognizer.results(in: visionImage)
-        } catch let error {
-          print("Failed to recognize text with error: \(error.localizedDescription).")
-          return nil
+            let result = try self.textRecognizer.results(in: image)
+            let blocks = OCRFrameProcessorPlugin.processBlocks(blocks: result.blocks)
+
+            if result.text.isEmpty {
+                return [:]
+            }else{
+                return [
+                    "result": [
+                        "text": result.text,
+                        "blocks": blocks,
+                    ]
+                ]
+            }
+        } catch {
+            print("Failed to recognize text: \(error.localizedDescription).")
+            return [:]
         }
-        
-        return [
-            "result": [
-                "text": result.text,
-                "blocks": OCRFrameProcessorPlugin.getBlockArray(result.blocks),
-            ]
-        ]
     }
 }
