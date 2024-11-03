@@ -2,6 +2,10 @@ package com.visioncameraocr
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.Rect
 import android.media.Image
